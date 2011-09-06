@@ -1,5 +1,6 @@
 -- Oozie 3.1.0 release
 
+OOZIE-41 Usability improvement for coordinator job analysis on Web Console
 OOZIE-37 Documentation related modifications for "log -action" option
 OOZIE-35 add auto-rerun for error codes JA008 and JA009 in action executor
 OOZIE-21 Fixed bug forked subwf not returning status to the parent wf job
