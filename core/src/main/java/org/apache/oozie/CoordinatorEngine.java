@@ -33,6 +33,7 @@ import org.apache.oozie.client.rest.RestConstants;
 import org.apache.oozie.command.CommandException;
 import org.apache.oozie.command.coord.CoordActionInfoCommand;
 import org.apache.oozie.command.coord.CoordActionInfoXCommand;
+import org.apache.oozie.command.coord.CoordActionsInDateRangeXCommand;
 import org.apache.oozie.command.coord.CoordChangeCommand;
 import org.apache.oozie.command.coord.CoordChangeXCommand;
 import org.apache.oozie.command.coord.CoordJobCommand;
@@ -361,6 +362,21 @@ public class CoordinatorEngine extends BaseEngine {
                         commaSeparatedActions.append(",");
                     }
                     commaSeparatedActions.append(actionsIterator.next().toString());
+                    commaRequired = 1;
+                }
+                filter.setParameter(DagXLogInfoService.ACTION, commaSeparatedActions.toString());
+            }
+            if (logRetrievalType.equals("date")) {
+                List<CoordinatorActionBean> actionsList = new CoordActionsInDateRangeXCommand(
+                        "CoordActionsInDateRange", "CoordActionsInDateRange", 1).getCoordActionsFromDates(jobId,
+                        logRetrievalScope);
+                StringBuilder commaSeparatedActions = new StringBuilder("");
+                int commaRequired = 0;
+                for (CoordinatorActionBean coordAction : actionsList) {
+                    if (commaRequired == 1) {
+                        commaSeparatedActions.append(",");
+                    }
+                    commaSeparatedActions.append(coordAction.getId());
                     commaRequired = 1;
                 }
                 filter.setParameter(DagXLogInfoService.ACTION, commaSeparatedActions.toString());
