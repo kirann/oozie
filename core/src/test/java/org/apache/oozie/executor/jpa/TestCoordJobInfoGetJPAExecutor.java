@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.oozie.CoordinatorJobBean;
 import org.apache.oozie.CoordinatorJobInfo;
 import org.apache.oozie.client.CoordinatorJob;
 import org.apache.oozie.client.OozieClient;
@@ -47,7 +48,7 @@ public class TestCoordJobInfoGetJPAExecutor extends XDataTestCase {
     }
 
     public void testCoordJobGet() throws Exception {
-        addRecordToCoordJobTable(CoordinatorJob.Status.RUNNING, false, false);
+        CoordinatorJobBean coordinatorJob1 = addRecordToCoordJobTable(CoordinatorJob.Status.RUNNING, false, false);
         addRecordToCoordJobTable(CoordinatorJob.Status.KILLED, false, false);
         _testGetJobInfoForStatus();
         _testGetJobInfoForGroup();
@@ -55,6 +56,8 @@ public class TestCoordJobInfoGetJPAExecutor extends XDataTestCase {
         _testGetJobInfoForAppName();
         _testGetJobInfoForUser();
         _testGetJobInfoForUserAndStatus();
+        _testGetJobInfoForFrequency();
+        _testGetJobInfoForId(coordinatorJob1.getId());
     }
 
     private void _testGetJobInfoForStatus() throws Exception {
@@ -129,6 +132,34 @@ public class TestCoordJobInfoGetJPAExecutor extends XDataTestCase {
         CoordinatorJobInfo ret = jpaService.execute(coordInfoGetCmd);
         assertNotNull(ret);
         assertEquals(ret.getCoordJobs().size(), 2);
+    }
+
+    private void _testGetJobInfoForFrequency() throws Exception {
+        JPAService jpaService = Services.get().get(JPAService.class);
+        assertNotNull(jpaService);
+        Map<String, List<String>> filter = new HashMap<String, List<String>>();
+        List<String> frequencyList = new ArrayList<String>();
+        frequencyList.add("1");
+        filter.put(OozieClient.FILTER_FREQUENCY, frequencyList);
+
+        CoordJobInfoGetJPAExecutor coordInfoGetCmd = new CoordJobInfoGetJPAExecutor(filter, 1, 20);
+        CoordinatorJobInfo ret = jpaService.execute(coordInfoGetCmd);
+        assertNotNull(ret);
+        assertEquals(ret.getCoordJobs().size(), 3);
+    }
+
+    private void _testGetJobInfoForId(String jobId) throws Exception {
+        JPAService jpaService = Services.get().get(JPAService.class);
+        assertNotNull(jpaService);
+        Map<String, List<String>> filter = new HashMap<String, List<String>>();
+        List<String> jobIdList = new ArrayList<String>();
+        jobIdList.add(jobId);
+        filter.put(OozieClient.FILTER_ID, jobIdList);
+
+        CoordJobInfoGetJPAExecutor coordInfoGetCmd = new CoordJobInfoGetJPAExecutor(filter, 1, 20);
+        CoordinatorJobInfo ret = jpaService.execute(coordInfoGetCmd);
+        assertNotNull(ret);
+        assertEquals(ret.getCoordJobs().size(), 1);
     }
 
 }
