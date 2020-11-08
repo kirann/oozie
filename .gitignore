@@ -25,3 +25,6 @@ mkdistro-*.out
 distro/downloads
 SecurityAuth.audit
 
+# Mac
+.DS_Store
+
